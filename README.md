@@ -4,8 +4,6 @@
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![macOS](https://img.shields.io/badge/macOS-10.15%2B-lightgrey.svg)](https://www.apple.com/macos)
 
-This document is also available in [Japanese](./README_JP.md).
-
 OAK-D Lite Webcam Utility for Mac is a utility software designed to easily use Luxonis's OAK-D Lite camera as a high-performance webcam on macOS.
 
 This utility allows you to leverage the powerful image processing capabilities of the OAK-D Lite to use high-quality video as a Mac webcam in various applications (video conferencing, live streaming, etc.).
@@ -226,7 +224,6 @@ OAK-DLiteWebcamUtilityForMac/
 ├── .gitignore
 ├── LICENSE                     # MIT License file
 ├── README.md                   # This file (English)
-├── README_JP.md                # Japanese version of README
 └── requirements.txt            # Python dependency list
 ```
 
