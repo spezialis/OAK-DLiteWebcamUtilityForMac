@@ -1,4 +1,5 @@
 import subprocess
+import sys
 import os
 import signal
 import threading
@@ -180,7 +181,7 @@ class DeviceConnectionManager:
                     self.alert_ui_callback("Error", f"uvc_handler.py not found at {script_path}")
                     return
 
-                self.uvc_process = subprocess.Popen(['python3', script_path, '--start-uvc'])
+                self.uvc_process = subprocess.Popen([sys.executable, script_path, '--start-uvc'])
                 self.camera_running = True
                 self.notify_ui_callback("OAK-D Camera", "Status", "Camera starting...")
             except Exception as e:
