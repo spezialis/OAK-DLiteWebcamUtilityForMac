@@ -86,6 +86,55 @@ With this method, the OAK-D Lite will function as a webcam only while the script
 Refer to the "`src/uvc_handler.py` Details" section below for more information.
 (Note: Direct execution of `uvc_handler.py` does not use the IOKit-based device monitoring.)
 
+## 🔌 Background Service (Plug-and-Play, No Terminal)
+
+The OAK-D Lite has no onboard flash, so it cannot start as a webcam by itself: software on the Mac must boot it after every plug-in. The background service does this automatically. Once installed, it starts at login, and a few seconds after you plug in the OAK it appears as **"Luxonis UVC Camera"** in Zoom, OBS, Photo Booth, browsers, etc. No terminal, venv or menu bar app needed.
+
+It is a small headless script (`src/uvc_daemon.py`, depends only on `depthai`) run by a macOS LaunchAgent. It waits for an OAK that hasn't been booted yet, starts it in UVC mode (1920×1080, 30 fps, NV12), and goes back to waiting when the camera is unplugged. It never takes over a device that another DepthAI app is already using.
+
+### Install
+
+Quit the menu bar app first (both must not use the camera at the same time), then from the repository root:
+
+```bash
+launchd/install.sh
+```
+
+This creates `~/Library/Application Support/OAKWebcam` with its own Python venv and a copy of the service, then registers and starts `~/Library/LaunchAgents/ch.stellaspeziali.oakwebcam.plist`. A copy is used because macOS privacy rules can block background services from reading `~/Documents`.
+
+To use a specific Python: `PYTHON=/path/to/python3 launchd/install.sh`. Re-run the script after pulling changes to update the installed copy.
+
+Use a **USB 3** cable: UVC mode is known to fail with OAK-D Lite over USB 2 on Apple Silicon.
+
+### Pause / Resume (e.g. for TouchDesigner)
+
+While the service runs, it holds the camera, so other DepthAI clients (TouchDesigner's OAK operators, depth/AI scripts) can't use it. Pause the service first:
+
+```bash
+# Pause (frees the camera until you resume or log in again)
+launchctl bootout gui/$(id -u)/ch.stellaspeziali.oakwebcam
+
+# Resume
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ch.stellaspeziali.oakwebcam.plist
+```
+
+### Status and Logs
+
+```bash
+launchctl print gui/$(id -u)/ch.stellaspeziali.oakwebcam | grep -E "state|pid"
+tail -f ~/Library/Logs/OAKWebcam/oakwebcam.log
+```
+
+The log records each boot, unplug and error. Crashes are restarted automatically by launchd.
+
+### Uninstall
+
+```bash
+launchd/uninstall.sh
+```
+
+This stops the service and removes the LaunchAgent and `~/Library/Application Support/OAKWebcam`. Logs in `~/Library/Logs/OAKWebcam` are kept.
+
 ## 👇 Usage
 
 ### Menu Bar Application
